@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers,
   pages: {
+    error: "/auth/error",
     signIn: "/",
   },
   session: {

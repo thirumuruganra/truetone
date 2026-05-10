@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { AuthButtons } from "@/components/AuthButtons";
@@ -11,6 +12,7 @@ import {
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
+  const authError = (await cookies()).has("auth-error");
   const session = await getAuthSession();
 
   if (session?.user?.email) {
@@ -124,6 +126,15 @@ export default async function Home() {
               Save your positioning, audience, preferred phrases, and sample posts once. Every draft after that starts from a better editorial memory.
             </p>
           </div>
+
+          {authError ? (
+            <div
+              role="status"
+              className="rounded-[1.6rem] border border-[color-mix(in_oklch,var(--color-accent)_30%,var(--color-border))] bg-[color-mix(in_oklch,var(--color-accent)_10%,var(--color-surface))] px-5 py-4 text-sm leading-7 text-(--color-foreground)"
+            >
+              Sign-in could not be completed. Try again.
+            </div>
+          ) : null}
 
           {authReady ? (
             <AuthButtons hasGoogle={hasGoogle} hasLinkedIn={hasLinkedIn} />
