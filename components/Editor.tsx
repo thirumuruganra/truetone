@@ -22,6 +22,13 @@ function textToHtml(value: string) {
 }
 
 export function Editor({ value, onChange, labelledBy, describedBy }: EditorProps) {
+  const attributes = {
+    class:
+      "min-h-[18rem] rounded-[1.75rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-5 py-5 font-body text-base leading-8 text-[color:var(--color-foreground)] shadow-[0_24px_60px_-44px_color-mix(in_oklch,var(--color-accent)_14%,transparent)] focus:outline-none sm:min-h-[22rem] sm:px-6 sm:py-6",
+    ...(labelledBy ? { "aria-labelledby": labelledBy } : {}),
+    ...(describedBy ? { "aria-describedby": describedBy } : {}),
+  };
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -32,12 +39,7 @@ export function Editor({ value, onChange, labelledBy, describedBy }: EditorProps
     ],
     content: textToHtml(value),
     editorProps: {
-      attributes: {
-        class:
-          "min-h-[18rem] rounded-[1.75rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-5 py-5 font-body text-base leading-8 text-[color:var(--color-foreground)] shadow-[0_24px_60px_-44px_color-mix(in_oklch,var(--color-accent)_14%,transparent)] focus:outline-none sm:min-h-[22rem] sm:px-6 sm:py-6",
-        "aria-labelledby": labelledBy,
-        "aria-describedby": describedBy,
-      },
+      attributes,
     },
     onUpdate({ editor: currentEditor }) {
       onChange(currentEditor.getText({ blockSeparator: "\n\n" }));
