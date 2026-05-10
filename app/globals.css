@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(0.972 0.018 72);
+  --page: oklch(0.946 0.022 70);
+  --surface: oklch(0.985 0.01 78);
+  --surface-strong: oklch(0.918 0.03 68);
+  --foreground: oklch(0.31 0.04 32);
+  --muted: oklch(0.52 0.028 38);
+  --border: oklch(0.85 0.022 65);
+  --accent: oklch(0.61 0.15 32);
+  --accent-foreground: oklch(0.982 0.012 78);
+  --shadow: oklch(0.45 0.035 26);
+  --line: oklch(0.76 0.035 48);
+  --warning: oklch(0.74 0.14 78);
+  --danger: oklch(0.58 0.19 24);
+}
+
+[data-theme="dark"] {
+  --background: oklch(0.205 0.022 28);
+  --page: oklch(0.245 0.024 30);
+  --surface: oklch(0.285 0.022 30);
+  --surface-strong: oklch(0.345 0.03 34);
+  --foreground: oklch(0.925 0.012 72);
+  --muted: oklch(0.74 0.018 58);
+  --border: oklch(0.4 0.022 35);
+  --accent: oklch(0.69 0.13 36);
+  --accent-foreground: oklch(0.225 0.02 30);
+  --shadow: oklch(0.08 0.02 20);
+  --line: oklch(0.52 0.042 42);
+  --warning: oklch(0.76 0.13 78);
+  --danger: oklch(0.67 0.16 27);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-shadow: var(--shadow);
+  --color-line: var(--line);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --font-body: var(--font-alegreya-sans);
+  --font-sans: var(--font-alegreya-sans);
+  --font-display: var(--font-alegreya);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in oklch, var(--accent) 26%, transparent), transparent 24%),
+    radial-gradient(circle at 88% 12%, color-mix(in oklch, var(--line) 26%, transparent), transparent 20%),
+    linear-gradient(180deg, color-mix(in oklch, var(--background) 92%, var(--surface) 8%), var(--page));
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  min-height: 100vh;
+}
+
+body::before {
+  background:
+    linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), color-mix(in oklch, var(--line) 40%, transparent) calc(100% - 1px), color-mix(in oklch, var(--line) 40%, transparent) 100%),
+    linear-gradient(transparent 0, transparent calc(100% - 1px), color-mix(in oklch, var(--line) 34%, transparent) calc(100% - 1px), color-mix(in oklch, var(--line) 34%, transparent) 100%);
+  background-size: 96px 96px;
+  content: "";
+  inset: 0;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 72%);
+  opacity: 0.18;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+@media (max-width: 639px) {
+  body {
+    background:
+      radial-gradient(circle at 12% 8%, color-mix(in oklch, var(--accent) 14%, transparent), transparent 26%),
+      linear-gradient(180deg, color-mix(in oklch, var(--background) 94%, var(--surface) 6%), var(--page));
+  }
+
+  body::before {
+    background-size: 72px 72px;
+    opacity: 0.08;
+  }
+}
+
+a,
+button,
+input,
+textarea {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease,
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:hover,
+  a:hover {
+    transform: translateY(-1px);
+  }
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--accent) 65%, transparent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--accent) 36%, var(--surface));
+  color: var(--foreground);
+}
+
+.ProseMirror {
+  min-height: 18rem;
+}
+
+@media (min-width: 640px) {
+  .ProseMirror {
+    min-height: 22rem;
+  }
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.stage-reveal {
+  animation: stage-reveal 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.panel-divider {
+  height: 1px;
+  left: 1.5rem;
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+}
+
+.panel-divider-gap {
+  padding-top: 2.75rem;
+}
+
+@media (min-width: 640px) {
+  .panel-divider {
+    left: 2rem;
+    right: 2rem;
+    top: 2rem;
+  }
+
+  .panel-divider-gap {
+    padding-top: 3.5rem;
+  }
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes stage-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  button:hover,
+  a:hover {
+    transform: none;
+  }
+}
