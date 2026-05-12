@@ -52,7 +52,7 @@ export default async function SettingsPage() {
           <div className="panel-divider-gap relative space-y-8">
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-(--color-muted)">
-                Voice profile
+                Tone profile
               </p>
               <h1 className="font-display text-4xl leading-[0.96] text-(--color-foreground) sm:text-6xl sm:leading-[0.92]">
                 Give the model a better memory of you.

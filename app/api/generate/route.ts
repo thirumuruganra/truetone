@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
 
   if (!user?.context) {
     return NextResponse.json(
-      { error: "Complete your voice profile before generating a post." },
+      { error: "Complete your tone profile before generating a post." },
       { status: 400 },
     );
   }

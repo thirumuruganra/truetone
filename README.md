@@ -5,7 +5,7 @@ TrueTone is a voice-aware LinkedIn writing studio built with Next.js. It turns r
 ## Features
 
 - OAuth sign-in with Google or LinkedIn when provider keys are configured
-- Voice profile setup for identity, audience, tone adjectives, phrases to use, phrases to avoid, and 2 to 5 sample posts
+- Tone profile setup for identity, audience, tone adjectives, phrases to use, phrases to avoid, and 2 to 5 sample posts
 - Gemini-powered LinkedIn post generation from a rough draft plus saved context
 - Rich editing workflow with TipTap for refining the final draft
 - Character counter and one-click copy button
@@ -27,7 +27,7 @@ TrueTone is a voice-aware LinkedIn writing studio built with Next.js. It turns r
 ## How It Works
 
 1. Sign in.
-2. Complete your voice profile in Settings.
+2. Complete your tone profile in Settings.
 3. Paste a rough idea into the dashboard.
 4. Generate a stronger LinkedIn draft.
 5. Edit the final version and copy it for publishing.
@@ -35,7 +35,7 @@ TrueTone is a voice-aware LinkedIn writing studio built with Next.js. It turns r
 ## App Routes
 
 - `/` - Landing page and auth entry point
-- `/settings` - Voice profile builder
+- `/settings` - Tone profile builder
 - `/dashboard` - Drafting and generation workspace
 - `/api/context` - Read and save user context
 - `/api/generate` - Generate a LinkedIn post from saved context plus draft input
@@ -113,7 +113,7 @@ Stores the signed-in user's writing context, including:
 Generates a LinkedIn post by combining:
 
 - The user's rough draft
-- The saved voice profile
+- The saved tone profile
 - Example posts
 - Prompt instructions for hook, paragraph spacing, CTA, and hashtags
 

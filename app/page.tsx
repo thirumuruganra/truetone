@@ -102,7 +102,7 @@ export default async function Home() {
                   <div className="rounded-[1.6rem] border border-(--color-border) bg-(--color-surface) p-5 text-(--color-muted)">
                     Students copy founder-style posts because they think polished equals credible. Most of it is tidy, forgettable, and not really theirs.
                   </div>
-                  <div className="rounded-[1.6rem] bg-(--color-foreground) p-5 text-(--color-accent-foreground)">
+                  <div className="rounded-[1.6rem] border border-(--color-border) bg-(--color-surface) p-5 text-(--color-foreground)">
                     The fastest way to sound replaceable on LinkedIn is to borrow a voice that was never built from your own work. Clarity lands harder when the phrasing still sounds like you.
                   </div>
                 </div>
@@ -120,7 +120,7 @@ export default async function Home() {
               Start here
             </p>
             <h2 className="font-display text-3xl leading-[0.98] text-(--color-foreground) sm:text-4xl sm:leading-[0.94]">
-              Build the voice profile, then open the writing room.
+              Build the tone profile, then open the writing room.
             </h2>
             <p className="text-base leading-7 text-(--color-muted)">
               Save your positioning, audience, preferred phrases, and sample posts once. Every draft after that starts from a better editorial memory.

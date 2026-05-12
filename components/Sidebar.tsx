@@ -8,7 +8,7 @@ import { signOut } from "next-auth/react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navigation = [
-  { href: "/settings", label: "Voice profile" },
+  { href: "/settings", label: "Tone profile" },
   { href: "/dashboard", label: "Writer studio" },
 ];
 
