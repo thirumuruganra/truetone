@@ -40,6 +40,7 @@ model PostDraft {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   original  String
   generated String
+  revisionCount Int  @default(0)
   createdAt DateTime @default(now())
 }
 

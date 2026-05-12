@@ -24,7 +24,7 @@ export function CopyButton({ text }: CopyButtonProps) {
       type="button"
       onClick={handleCopy}
       disabled={!text.trim()}
-      className="min-h-11 rounded-full border border-[color:var(--color-border)] px-4 py-2.5 text-sm font-medium text-[color:var(--color-foreground)] transition hover:bg-[color:var(--color-surface-strong)] disabled:cursor-not-allowed disabled:opacity-50"
+      className="min-h-11 rounded-full border border-(--color-border) px-4 py-2.5 text-sm font-medium text-(--color-foreground) transition hover:bg-(--color-surface-strong) disabled:cursor-not-allowed disabled:opacity-50"
     >
       {status === "copied" ? "Copied" : status === "error" ? "Copy failed" : "Copy post"}
     </button>

@@ -10,6 +10,8 @@ type EditorProps = {
   onChange: (value: string) => void;
   labelledBy?: string;
   describedBy?: string;
+  wrapperClassName?: string;
+  editorClassName?: string;
 };
 
 function textToHtml(value: string) {
@@ -21,10 +23,10 @@ function textToHtml(value: string) {
     .join("");
 }
 
-export function Editor({ value, onChange, labelledBy, describedBy }: EditorProps) {
+export function Editor({ value, onChange, labelledBy, describedBy, wrapperClassName, editorClassName }: EditorProps) {
   const attributes = {
     class:
-      "min-h-[18rem] rounded-[1.75rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-5 py-5 font-body text-base leading-8 text-[color:var(--color-foreground)] shadow-[0_24px_60px_-44px_color-mix(in_oklch,var(--color-accent)_14%,transparent)] focus:outline-none sm:min-h-[22rem] sm:px-6 sm:py-6",
+      `min-h-[18rem] rounded-[1.9rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-5 py-5 font-body text-base leading-8 text-[color:var(--color-foreground)] shadow-[0_24px_60px_-44px_color-mix(in_oklch,var(--color-accent)_14%,transparent)] focus:outline-none sm:min-h-[22rem] sm:px-6 sm:py-6 ${editorClassName ?? ""}`,
     ...(labelledBy ? { "aria-labelledby": labelledBy } : {}),
     ...(describedBy ? { "aria-describedby": describedBy } : {}),
   };
@@ -58,5 +60,5 @@ export function Editor({ value, onChange, labelledBy, describedBy }: EditorProps
     }
   }, [editor, value]);
 
-  return <EditorContent editor={editor} />;
+  return <EditorContent editor={editor} className={wrapperClassName} />;
 }

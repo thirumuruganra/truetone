@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { ZodIssue } from "zod";
 
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -17,6 +18,43 @@ const CONTEXT_RATE_LIMIT = {
 };
 
 const CONTEXT_BODY_LIMIT_BYTES = 16_384;
+
+const CONTEXT_FIELD_LABELS: Record<string, string> = {
+  identity: "Identity",
+  audience: "Audience",
+  voiceAdjectives: "Voice adjectives",
+  phrasesToUse: "Phrases to use",
+  phrasesToAvoid: "Phrases to avoid",
+  examplePosts: "Example post",
+};
+
+function getContextFieldLabel(issue: ZodIssue) {
+  const [fieldKey, index] = issue.path;
+
+  if (fieldKey === "examplePosts" && typeof index === "number") {
+    return `Example post ${index + 1}`;
+  }
+
+  if (typeof fieldKey === "string") {
+    return CONTEXT_FIELD_LABELS[fieldKey] ?? fieldKey;
+  }
+
+  return "This field";
+}
+
+function formatContextValidationIssue(issue: ZodIssue) {
+  const fieldLabel = getContextFieldLabel(issue);
+
+  if (issue.code === "too_big" && typeof issue.maximum === "number") {
+    return `${fieldLabel} is too long. Reduce the content in the ${fieldLabel} text box to ${issue.maximum} characters or fewer.`;
+  }
+
+  if (fieldLabel === "This field") {
+    return issue.message || "Invalid context payload.";
+  }
+
+  return `${fieldLabel}: ${issue.message}`;
+}
 
 async function getCurrentUser() {
   const session = await getAuthSession();
@@ -73,7 +111,11 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return applyRateLimitHeaders(
       NextResponse.json(
-        { error: parsed.error.issues[0]?.message || "Invalid context payload." },
+        {
+          error: parsed.error.issues[0]
+            ? formatContextValidationIssue(parsed.error.issues[0])
+            : "Invalid context payload.",
+        },
         { status: 400 },
       ),
       rateLimit,

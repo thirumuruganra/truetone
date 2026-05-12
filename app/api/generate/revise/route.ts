@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getAuthSession } from "@/lib/auth";
-import { generateLinkedInPost, hasGeminiConfig } from "@/lib/gemini";
+import { hasGeminiConfig, reviseLinkedInPost } from "@/lib/gemini";
 import { getRemainingRevisionPrompts } from "@/lib/post-drafts";
 import { prisma } from "@/lib/prisma";
 import {
@@ -10,20 +10,20 @@ import {
   createRateLimitResponse,
 } from "@/lib/security/rate-limit";
 import { readJsonBody } from "@/lib/security/input";
-import { generateSchema } from "@/lib/validations/generate";
+import { reviseSchema } from "@/lib/validations/generate";
 
-const GENERATE_RATE_LIMIT = {
-  bucket: "generate",
-  limit: 5,
+const REVISE_RATE_LIMIT = {
+  bucket: "revise",
+  limit: 10,
   windowMs: 60_000,
 };
 
-const GENERATE_BODY_LIMIT_BYTES = 8_192;
+const REVISE_BODY_LIMIT_BYTES = 12_288;
 
 export async function POST(request: NextRequest) {
   const session = await getAuthSession();
   const rateLimit = checkRateLimit(request, {
-    ...GENERATE_RATE_LIMIT,
+    ...REVISE_RATE_LIMIT,
     userKey: session?.user?.email ?? null,
   });
 
@@ -49,20 +49,20 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await readJsonBody(request, {
-    maxBytes: GENERATE_BODY_LIMIT_BYTES,
-    errorLabel: "draft payload",
+    maxBytes: REVISE_BODY_LIMIT_BYTES,
+    errorLabel: "revision payload",
   });
 
   if (!body.ok) {
     return applyRateLimitHeaders(body.response, rateLimit);
   }
 
-  const parsed = generateSchema.safeParse(body.data);
+  const parsed = reviseSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return applyRateLimitHeaders(
       NextResponse.json(
-        { error: parsed.error.issues[0]?.message || "Invalid draft payload." },
+        { error: parsed.error.issues[0]?.message || "Invalid revision payload." },
         { status: 400 },
       ),
       rateLimit,
@@ -77,32 +77,86 @@ export async function POST(request: NextRequest) {
   if (!user?.context) {
     return applyRateLimitHeaders(
       NextResponse.json(
-        { error: "Complete your tone profile before generating a post." },
+        { error: "Complete your tone profile before revising a post." },
         { status: 400 },
       ),
       rateLimit,
     );
   }
 
+  const postDraft = await prisma.postDraft.findFirst({
+    where: {
+      id: parsed.data.postDraftId,
+      userId: user.id,
+    },
+  });
+
+  if (!postDraft) {
+    return applyRateLimitHeaders(
+      NextResponse.json(
+        { error: "Generated post not found." },
+        { status: 404 },
+      ),
+      rateLimit,
+    );
+  }
+
+  const remainingPrompts = getRemainingRevisionPrompts(postDraft.revisionCount);
+
+  if (remainingPrompts <= 0) {
+    return applyRateLimitHeaders(
+      NextResponse.json(
+        {
+          error: "You have used all 3 revision prompts for this post.",
+          remainingPrompts: 0,
+        },
+        { status: 403 },
+      ),
+      rateLimit,
+    );
+  }
+
   try {
-    const generated = await generateLinkedInPost({
-      draft: parsed.data.draft,
+    const generated = await reviseLinkedInPost({
+      originalDraft: postDraft.original,
+      editedPost: parsed.data.editedPost,
+      instruction: parsed.data.instruction,
       context: user.context,
     });
 
-    const postDraft = await prisma.postDraft.create({
-      data: {
+    const updatedDraft = await prisma.postDraft.updateMany({
+      where: {
+        id: postDraft.id,
         userId: user.id,
-        original: parsed.data.draft,
+        revisionCount: {
+          lt: 3,
+        },
+      },
+      data: {
         generated,
+        revisionCount: {
+          increment: 1,
+        },
       },
     });
+
+    if (updatedDraft.count === 0) {
+      return applyRateLimitHeaders(
+        NextResponse.json(
+          {
+            error: "You have used all 3 revision prompts for this post.",
+            remainingPrompts: 0,
+          },
+          { status: 403 },
+        ),
+        rateLimit,
+      );
+    }
 
     return applyRateLimitHeaders(
       NextResponse.json({
         generated,
-        postDraftId: postDraft.id,
-        remainingPrompts: getRemainingRevisionPrompts(0),
+        remainingPrompts: getRemainingRevisionPrompts(postDraft.revisionCount + 1),
       }),
       rateLimit,
     );
@@ -113,7 +167,7 @@ export async function POST(request: NextRequest) {
           error:
             error instanceof Error
               ? error.message
-              : "Unable to generate a post right now.",
+              : "Unable to revise the post right now.",
         },
         { status: 500 },
       ),

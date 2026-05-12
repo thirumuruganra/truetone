@@ -21,7 +21,7 @@ export default async function Home() {
       include: { context: true },
     });
 
-    redirect(user?.context ? "/dashboard" : "/settings");
+    redirect(user?.context ? "/generator" : "/tone");
   }
 
   const authReady = hasConfiguredAuthProviders();
@@ -30,19 +30,7 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-368 flex-col px-5 py-6 sm:px-10 sm:py-8 lg:px-16 lg:py-10">
-      <div className="stage-reveal flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.38em] text-(--color-muted)">
-            TrueTone studio
-          </p>
-          <p className="max-w-md text-sm leading-6 text-(--color-muted)">
-            A writing room for people who want sharper LinkedIn posts without borrowing a stranger&apos;s voice.
-          </p>
-        </div>
-        <ThemeToggle className="w-full sm:w-auto sm:shrink-0" />
-      </div>
-
-      <div className="mt-6 grid items-start gap-6 lg:mt-8 lg:gap-8 lg:grid-cols-[minmax(0,1.2fr)_24rem]">
+      <div className="grid items-start gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1.2fr)_24rem]">
         <section
           className="stage-reveal relative isolate overflow-hidden rounded-[2.4rem] border border-(--color-border) bg-(--color-surface) px-5 py-8 shadow-[0_34px_100px_-62px_color-mix(in_oklch,var(--color-shadow)_62%,transparent)] sm:rounded-[3rem] sm:px-10 sm:py-12 lg:min-h-176 lg:px-14 lg:py-14 lg:shadow-[0_52px_140px_-70px_color-mix(in_oklch,var(--color-shadow)_75%,transparent)]"
           style={{ animationDelay: "90ms" }}
@@ -115,6 +103,10 @@ export default async function Home() {
           className="stage-reveal space-y-6 rounded-4xl border border-(--color-border) bg-[color-mix(in_oklch,var(--color-page)_88%,var(--color-surface)_12%)] p-6 shadow-[0_28px_70px_-56px_color-mix(in_oklch,var(--color-shadow)_62%,transparent)] sm:rounded-[2.5rem] sm:p-8 lg:sticky lg:top-8 lg:shadow-[0_34px_90px_-60px_color-mix(in_oklch,var(--color-shadow)_70%,transparent)]"
           style={{ animationDelay: "180ms" }}
         >
+          <div className="flex justify-end">
+            <ThemeToggle className="w-full sm:w-auto sm:min-w-60" />
+          </div>
+
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-(--color-muted)">
               Start here

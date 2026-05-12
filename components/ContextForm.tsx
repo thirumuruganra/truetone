@@ -14,6 +14,7 @@ type ContextFormValues = {
 
 type ContextFormProps = {
   initialValues?: Partial<ContextFormValues>;
+  isAuthenticated?: boolean;
 };
 
 const MIN_POST_FIELDS = 2;
@@ -36,7 +37,7 @@ function buildInitialState(initialValues?: Partial<ContextFormValues>): ContextF
   };
 }
 
-export function ContextForm({ initialValues }: ContextFormProps) {
+export function ContextForm({ initialValues, isAuthenticated = true }: ContextFormProps) {
   const router = useRouter();
   const [form, setForm] = useState<ContextFormValues>(() => buildInitialState(initialValues));
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -68,6 +69,11 @@ export function ContextForm({ initialValues }: ContextFormProps) {
   async function saveContext() {
     setFeedback(null);
 
+    if (!isAuthenticated) {
+      setFeedback("Sign in to save your tone profile.");
+      return;
+    }
+
     const payload = {
       ...form,
       examplePosts: form.examplePosts.map((post) => post.trim()).filter(Boolean),
@@ -88,7 +94,7 @@ export function ContextForm({ initialValues }: ContextFormProps) {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/generator");
     router.refresh();
   }
 
@@ -110,7 +116,7 @@ export function ContextForm({ initialValues }: ContextFormProps) {
             value={form.identity}
             onChange={(event) => updateField("identity", event.target.value)}
             rows={4}
-            className="w-full rounded-3xl border border-(--color-border) bg-(--color-surface) px-5 py-4 text-base leading-7 text-(--color-foreground) outline-none transition focus:border-(--color-accent)"
+            className="scrollbar-hidden w-full rounded-3xl border border-(--color-border) bg-(--color-surface) px-5 py-4 text-base leading-7 text-(--color-foreground) outline-none transition focus:border-(--color-accent)"
             placeholder="Example: Product marketing strategist helping early-career operators write with more clarity and edge."
           />
         </label>
@@ -123,7 +129,7 @@ export function ContextForm({ initialValues }: ContextFormProps) {
             value={form.audience}
             onChange={(event) => updateField("audience", event.target.value)}
             rows={4}
-            className="w-full rounded-3xl border border-(--color-border) bg-(--color-surface) px-5 py-4 text-base leading-7 text-(--color-foreground) outline-none transition focus:border-(--color-accent)"
+            className="scrollbar-hidden w-full rounded-3xl border border-(--color-border) bg-(--color-surface) px-5 py-4 text-base leading-7 text-(--color-foreground) outline-none transition focus:border-(--color-accent)"
             placeholder="Who reads you, what they struggle with, and what kind of shift you want your posts to create."
           />
         </label>
@@ -188,7 +194,7 @@ export function ContextForm({ initialValues }: ContextFormProps) {
                 value={post}
                 onChange={(event) => updateExamplePost(index, event.target.value)}
                 rows={5}
-                className="w-full rounded-3xl border border-(--color-border) bg-(--color-page) px-5 py-4 text-base leading-7 text-(--color-foreground) outline-none transition focus:border-(--color-accent)"
+                className="scrollbar-hidden w-full rounded-3xl border border-(--color-border) bg-(--color-page) px-5 py-4 text-base leading-7 text-(--color-foreground) outline-none transition focus:border-(--color-accent)"
                 placeholder="Paste a post that feels unmistakably yours."
               />
             </label>
@@ -206,13 +212,18 @@ export function ContextForm({ initialValues }: ContextFormProps) {
       </section>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p aria-live="polite" className="text-sm text-(--color-danger)">{feedback}</p>
+        <p
+          aria-live="polite"
+          className={`text-sm ${feedback ? "text-(--color-danger)" : "text-(--color-muted)"}`}
+        >
+          {feedback ?? (!isAuthenticated ? "Sign in to save this profile to your workspace." : "")}
+        </p>
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !isAuthenticated}
           className="min-h-11 w-full rounded-full bg-(--color-accent) px-6 py-3 text-sm font-semibold text-(--color-accent-foreground) transition hover:opacity-92 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
-          {isPending ? "Saving profile..." : "Save and open studio"}
+          {!isAuthenticated ? "Sign in to save profile" : isPending ? "Saving profile..." : "Save and open generator"}
         </button>
       </div>
     </form>
