@@ -29,15 +29,16 @@ export default async function TonePage() {
       })
     : null;
   const isAuthenticated = Boolean(session?.user?.email && user);
+  const context = user?.context;
 
-  const initialValues = user.context
+  const initialValues = context
     ? {
-        identity: user.context.identity,
-        audience: user.context.audience,
-        voiceAdjectives: user.context.voiceAdjectives,
-        phrasesToUse: user.context.phrasesToUse ?? "",
-        phrasesToAvoid: user.context.phrasesToAvoid ?? "",
-        examplePosts: normalizeExamplePosts(user.context.examplePosts),
+        identity: context.identity,
+        audience: context.audience,
+        voiceAdjectives: context.voiceAdjectives,
+        phrasesToUse: context.phrasesToUse ?? "",
+        phrasesToAvoid: context.phrasesToAvoid ?? "",
+        examplePosts: normalizeExamplePosts(context.examplePosts),
       }
     : undefined;
 
